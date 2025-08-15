@@ -9,6 +9,6 @@ class Tanaman extends Model
     protected $table = 'tanamen';
 
     protected $fillable = [
-        'nama', 'deskripsi', 'manfaat', 'asal_daerah', 'foto'
+    'nama', 'deskripsi', 'manfaat', 'asal_daerah', 'foto', 'kategori'
     ];
 }

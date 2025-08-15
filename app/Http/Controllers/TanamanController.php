@@ -15,9 +15,16 @@ class TanamanController extends Controller
     }
 
     public function create()
-    {
-        return view('admin.tanaman.create');
-    }
+{
+    $kategoriOptions = [
+        'Obat Demam', 
+        'Pereda Nyeri', 
+        'Kecantikan', 
+        'Pencernaan'
+    ];
+    
+    return view('admin.tanaman.create', compact('kategoriOptions'));
+}
 public function store(Request $request)
 {
     $validated = $request->validate([
@@ -39,9 +46,16 @@ public function store(Request $request)
 }
 
     public function edit(Tanaman $tanaman)
-    {
-        return view('admin.tanaman.edit', compact('tanaman'));
-    }
+{
+    $kategoriOptions = [
+        'Obat Demam', 
+        'Pereda Nyeri', 
+        'Kecantikan', 
+        'Pencernaan'
+    ];
+    
+    return view('admin.tanaman.edit', compact('tanaman', 'kategoriOptions'));
+}
 
     public function update(Request $request, Tanaman $tanaman)
     {

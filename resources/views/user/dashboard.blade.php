@@ -20,25 +20,38 @@
 
     <!-- Search & Filter Section -->
     <div class="search-filter mb-4">
-        <div class="row g-3">
-            <div class="col-md-8">
-                <div class="input-group shadow-sm">
-                    <span class="input-group-text bg-white border-0">
-                        <i class="fas fa-search text-muted"></i>
-                    </span>
-                    <input type="text" class="form-control border-0 py-3" placeholder="Cari tanaman herbal...">
+        <form action="{{ route('home') }}" method="GET">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-white border-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control border-0 py-3" 
+                            placeholder="Cari tanaman herbal..." value="{{ request('search') }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select py-3 shadow-sm border-0" name="kategori">
+                        <option value="">Semua Kategori</option>
+                        <option value="Obat Demam" {{ request('kategori') == 'Obat Demam' ? 'selected' : '' }}>Obat Demam</option>
+                        <option value="Pereda Nyeri" {{ request('kategori') == 'Pereda Nyeri' ? 'selected' : '' }}>Pereda Nyeri</option>
+                        <option value="Kecantikan" {{ request('kategori') == 'Kecantikan' ? 'selected' : '' }}>Kecantikan</option>
+                        <option value="Pencernaan" {{ request('kategori') == 'Pencernaan' ? 'selected' : '' }}>Pencernaan</option>
+                    </select>
                 </div>
             </div>
-            <div class="col-md-4">
-                <select class="form-select py-3 shadow-sm border-0">
-                    <option selected>Semua Kategori</option>
-                    <option>Obat Demam</option>
-                    <option>Pereda Nyeri</option>
-                    <option>Kecantikan</option>
-                    <option>Pencernaan</option>
-                </select>
+            <div class="mt-3 text-end">
+                <button type="submit" class="btn btn-primary px-4 py-2">
+                    <i class="fas fa-search me-2"></i>Cari
+                </button>
+                @if(request()->has('search') || request()->has('kategori'))
+                    <a href="{{ route('home') }}" class="btn btn-outline-secondary px-4 py-2 ms-2">
+                        Reset
+                    </a>
+                @endif
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- Tanaman Terbaru Section -->
@@ -99,13 +112,21 @@
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             <div class="d-flex">
                                 <span class="badge bg-light text-dark me-2">
-                                    <i class="fas fa-tag me-1"></i> Obat
+                                    <i class="fas fa-tag me-1"></i> {{ $item->kategori ?: 'Obat' }}
                                 </span>
                             </div>
-                            <a href="{{ route('tanaman.show', $item->id) }}" 
-                                class="btn btn-sm btn-primary stretched-link">
+                            <button class="btn btn-sm btn-primary view-detail"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#detailModal"
+                                    data-id="{{ $item->id }}"
+                                    data-nama="{{ $item->nama }}"
+                                    data-deskripsi="{{ $item->deskripsi }}"
+                                    data-manfaat="{{ $item->manfaat }}"
+                                    data-asal_daerah="{{ $item->asal_daerah }}"
+                                    data-foto="{{ $item->foto ? asset('storage/' . $item->foto) : '' }}"
+                                    data-kategori="{{ $item->kategori }}">
                                 Lihat Detail
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -125,15 +146,7 @@
     <!-- Pagination -->
     @if($tanaman->count() > 0)
     <div class="d-flex justify-content-center mt-5">
-        <nav aria-label="Page navigation">
-            <ul class="pagination shadow-sm">
-                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-            </ul>
-        </nav>
+        {{ $tanaman->appends(request()->query())->links() }}
     </div>
     @endif
 
@@ -186,6 +199,53 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-4 overflow-hidden">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title">Detail Tanaman</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <div class="position-relative" style="height: 300px; overflow: hidden; border-radius: 16px;">
+                            <img id="detailModalImage" src="" class="img-fluid w-100 h-100 object-fit-cover" alt="Tanaman">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="fw-bold mb-3" id="detailModalName"></h4>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Asal Daerah</h6>
+                            <p id="detailModalAsal" class="mb-0"></p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Kategori</h6>
+                            <p id="detailModalKategori" class="mb-0"></p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Deskripsi</h6>
+                            <p id="detailModalDeskripsi" class="mb-0"></p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-2">Manfaat</h6>
+                            <p id="detailModalManfaat" class="mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -259,6 +319,67 @@
         background: linear-gradient(135deg, #38b2ac, #319795);
         color: white;
     }
+
+    .pagination {
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+        border-radius: 0.375rem;
+    }
+
+    .page-item:first-child .page-link {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    .page-item:last-child .page-link {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, #38b2ac, #319795);
+        color: white;
+        border-color: #38b2ac;
+    }
+
+    .page-link {
+        position: relative;
+        display: block;
+        padding: 0.5rem 0.75rem;
+        margin-left: -1px;
+        line-height: 1.25;
+        color: #38b2ac;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        color: #2c7a7b;
+        background-color: #e6fffa;
+        border-color: #dee2e6;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-header {
+        border-bottom: none;
+        padding: 1.5rem;
+    }
+    
+    .modal-body {
+        padding: 2rem;
+    }
+    
+    .modal-footer {
+        border-top: none;
+        padding: 1.5rem;
+    }
 </style>
 
 <script>
@@ -280,6 +401,33 @@
                 this.classList.add('btn-outline-secondary');
             }
         });
+    });
+
+    // Fungsi untuk menampilkan modal detail
+    document.getElementById('detailModal').addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const nama = button.getAttribute('data-nama');
+        const deskripsi = button.getAttribute('data-deskripsi');
+        const manfaat = button.getAttribute('data-manfaat');
+        const asal_daerah = button.getAttribute('data-asal_daerah');
+        const foto = button.getAttribute('data-foto');
+        const kategori = button.getAttribute('data-kategori');
+        
+        // Isi data ke dalam modal
+        document.getElementById('detailModalName').textContent = nama;
+        document.getElementById('detailModalDeskripsi').textContent = deskripsi;
+        document.getElementById('detailModalManfaat').textContent = manfaat;
+        document.getElementById('detailModalAsal').textContent = asal_daerah;
+        document.getElementById('detailModalKategori').textContent = kategori;
+        
+        // Set gambar
+        const imgElement = document.getElementById('detailModalImage');
+        if (foto) {
+            imgElement.src = foto;
+            imgElement.style.display = 'block';
+        } else {
+            imgElement.style.display = 'none';
+        }
     });
 </script>
 @endsection
