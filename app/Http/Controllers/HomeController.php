@@ -23,7 +23,7 @@ class HomeController extends Controller
         if ($role === "user") {
             return view('user.dashboard', compact('tanaman'));
         } elseif ($role === "admin") {
-            return view('admin.dashboard', compact('tanaman')); // Juga kirim tanaman ke admin jika perlu
+            return view('admin.dashboard', compact('tanaman')); 
         } else {
             abort(403, 'Role tidak dikenali.');
         }

@@ -18,29 +18,25 @@ class TanamanController extends Controller
     {
         return view('admin.tanaman.create');
     }
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'nama' => 'required|string|max:255',
+        'deskripsi' => 'required',
+        'manfaat' => 'required',
+        'asal_daerah' => 'required',
+        'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+    ]);
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'deskripsi' => 'required',
-            'manfaat' => 'required',
-            'asal_daerah' => 'required',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-        ]);
-
-        if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            
-            // Simpan di public/tanaman-images
-            $file->move(public_path('tanaman-images'), $filename);
-            $validated['foto'] = 'tanaman-images/' . $filename;
-        }
-
-        Tanaman::create($validated);
-        return redirect()->route('tanaman.index')->with('success', 'Data berhasil disimpan.');
+    if ($request->hasFile('foto')) {
+        // Simpan di storage
+        $path = $request->file('foto')->store('tanaman', 'public');
+        $validated['foto'] = $path; 
     }
+
+    Tanaman::create($validated);
+    return redirect()->route('tanaman.index')->with('success', 'Data berhasil disimpan.');
+}
 
     public function edit(Tanaman $tanaman)
     {
@@ -74,15 +70,15 @@ class TanamanController extends Controller
     }
 
     public function destroy(Tanaman $tanaman)
-    {
-        // Hapus foto jika ada
-        if ($tanaman->foto && file_exists(public_path($tanaman->foto))) {
-            unlink(public_path($tanaman->foto));
-        }
-        
-        $tanaman->delete();
-        return redirect()->route('tanaman.index')->with('success', 'Data berhasil dihapus.');
+{
+    // Hapus foto jika ada
+    if ($tanaman->foto) {
+        Storage::disk('public')->delete($tanaman->foto);
     }
+    
+    $tanaman->delete();
+    return redirect()->route('tanaman.index')->with('success', 'Data berhasil dihapus.');
+}
 
     public function show($id)
     {

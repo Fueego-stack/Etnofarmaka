@@ -23,7 +23,7 @@
                             <div class="numbers">
                                 <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Pengguna</p>
                                 <!-- Tampilkan jumlah pengguna -->
-                                <h5 class="font-weight-bolder">{{ $totalUsers }}</h5>
+                                <h5 class="font-weight-bolder">{{ $totalUsers ?? 0 }}</h5>
                             </div>
                         </div>
                         <div class="col-4 text-end">
@@ -36,7 +36,6 @@
             </div>
         </div>
 
-        <!-- Card lainnya tetap sama -->
         <div class="col-lg-4 col-sm-6 mb-4">
             <div class="card shadow-lg border-0">
                 <div class="card-body p-4">
@@ -44,7 +43,7 @@
                         <div class="col-8">
                             <div class="numbers">
                                 <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Ramuan</p>
-                                <h5 class="font-weight-bolder">0</h5>
+                                <h5 class="font-weight-bolder">{{ $totalRamuan ?? 0 }}</h5>
                             </div>
                         </div>
                         <div class="col-4 text-end">
@@ -64,7 +63,7 @@
                         <div class="col-8">
                             <div class="numbers">
                                 <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Kunjungan</p>
-                                <h5 class="font-weight-bolder">0</h5>
+                                <h5 class="font-weight-bolder">{{ $totalKunjungan ?? 0 }}</h5>
                             </div>
                         </div>
                         <div class="col-4 text-end">

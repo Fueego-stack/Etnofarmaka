@@ -3,6 +3,7 @@
 @section('title', 'Dashboard User')
 
 @section('content')
+
 <div class="container-fluid px-4 py-3">
     <!-- Welcome Banner -->
     <div class="welcome-banner bg-gradient-primary rounded-4 shadow-sm p-4 mb-4 text-white">
@@ -55,10 +56,10 @@
                     @if($item->foto)
                     <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
                         <img src="{{ asset('storage/' . $item->foto) }}" 
-                             class="img-fluid w-100 h-100 object-fit-cover"
-                             alt="{{ $item->nama }}">
+                            class="img-fluid w-100 h-100 object-fit-cover"
+                            alt="{{ $item->nama }}">
                         <div class="card-img-overlay d-flex flex-column justify-content-end p-3" 
-                             style="background: linear-gradient(transparent 40%, rgba(0,0,0,0.7))">
+                            style="background: linear-gradient(transparent 40%, rgba(0,0,0,0.7))">
                             <span class="badge bg-success bg-opacity-75 mb-2">
                                 {{ $item->asal_daerah }}
                             </span>

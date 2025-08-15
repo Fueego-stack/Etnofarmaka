@@ -1,27 +1,26 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-use App\Models\User;
 
 use App\Http\Controllers\Controller;
-
-// class AdminDashboardController extends Controller
-// {
-//     public function index()
-//     {
-//         return view('admin.dashboard'); // Pastikan view ini ada
-//     }
-// }
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
     public function index()
     {
-        // Hitung jumlah pengguna
+
         $totalUsers = User::count();
         
+
+        $totalRamuan = 0; 
+        $totalKunjungan = 0; 
+        
         return view('admin.dashboard', [
-            'totalUsers' => $totalUsers
+            'totalUsers' => $totalUsers,
+            'totalRamuan' => $totalRamuan,
+            'totalKunjungan' => $totalKunjungan
         ]);
     }
 }
