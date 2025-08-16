@@ -30,7 +30,7 @@
             <div class="container">
                 <nav class="navbar navbar-expand-lg custom_nav-container">
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        <span>TOGA NUSANTARA</span>
+                        <span>TOGA NUSANTARA - ETNOFARMAKA</span>
                     </a>
 
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
@@ -45,11 +45,7 @@
                         </ul>
                         <div class="user_option">
                             
-                            <form class="form-inline">
-                                <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </form>
+                            
                             <a href="{{ url('login') }}" class="order_online">Login</a>
                         </div>
                     </div>
@@ -69,9 +65,6 @@
                                         <p>
                                             Temukan khasiat tanaman herbal Indonesia dari generasi ke generasi. ETNOFARMAKA menghubungkan tradisi dan teknologi.
                                         </p>
-                                        <div class="btn-box">
-                                            <a href="{{ url('tanaman') }}" class="btn1">Pelajari Lebih Lanjut</a>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
