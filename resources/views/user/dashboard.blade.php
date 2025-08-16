@@ -100,8 +100,11 @@
                                     <span class="ms-2 small text-muted">(42)</span>
                                 </div>
                             </div>
-                            <button class="btn btn-sm btn-outline-secondary rounded-circle favorite-btn">
-                                <i class="far fa-heart"></i>
+                            @php
+                                $isFavorited = auth()->check() && auth()->user()->favorites->contains($item->id);
+                            @endphp
+                            <button class="btn btn-sm {{ $isFavorited ? 'btn-danger' : 'btn-outline-secondary' }} rounded-circle favorite-btn" data-id="{{ $item->id }}">
+                                <i class="{{ $isFavorited ? 'fas' : 'far' }} fa-heart"></i>
                             </button>
                         </div>
                         
@@ -164,9 +167,15 @@
                         <i class="fas fa-heart fa-3x text-danger mb-3"></i>
                         <h5 class="fw-bold mb-2">Tanaman Favorit</h5>
                         <p class="text-muted mb-4">Tambahkan tanaman ke favorit untuk melihatnya di sini</p>
-                        <button class="btn btn-outline-primary">
-                            Jelajahi Tanaman
-                        </button>
+                        @if(isset($favoritesCount) && $favoritesCount > 0)
+                            <a href="{{ route('favorites.index') }}" class="btn btn-primary favorites-counter">
+                                Lihat Favorit Saya ({{ $favoritesCount }})
+                            </a>
+                        @else
+                            <a href="{{ route('home') }}" class="btn btn-outline-primary">
+                                Jelajahi Tanaman
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -380,29 +389,20 @@
         border-top: none;
         padding: 1.5rem;
     }
+
+    .favorites-counter {
+        white-space: normal;
+        text-align: center;
+    }
+
+    @media (min-width: 768px) {
+        .favorites-counter {
+            white-space: nowrap;
+        }
+    }
 </style>
 
 <script>
-    // Favorite button interaction
-    document.querySelectorAll('.favorite-btn').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const icon = this.querySelector('i');
-            
-            if (icon.classList.contains('far')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas', 'text-danger');
-                this.classList.remove('btn-outline-secondary');
-                this.classList.add('btn-danger');
-            } else {
-                icon.classList.remove('fas', 'text-danger');
-                icon.classList.add('far');
-                this.classList.remove('btn-danger');
-                this.classList.add('btn-outline-secondary');
-            }
-        });
-    });
-
     // Fungsi untuk menampilkan modal detail
     document.getElementById('detailModal').addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
@@ -428,6 +428,57 @@
         } else {
             imgElement.style.display = 'none';
         }
+    });
+
+    // AJAX untuk tombol favorit (diperbaiki)
+    document.querySelectorAll('.favorite-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const tanamanId = this.getAttribute('data-id');
+            const icon = this.querySelector('i');
+            const url = "{{ route('favorites.toggle', ':id') }}".replace(':id', tanamanId);
+            
+            console.log("Mengirim request ke:", url);
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}",
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                console.log("Status response:", response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                
+                // Perbaikan logika perubahan kelas
+                if (data.is_favorited) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-danger');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.classList.remove('btn-danger');
+                    this.classList.add('btn-outline-secondary');
+                }
+                
+                // Update counter
+                const favButton = document.querySelector('.favorites-counter');
+                if (favButton) {
+                    favButton.textContent = `Lihat Favorit Saya (${data.favorites_count})`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            });
+        });
     });
 </script>
 @endsection

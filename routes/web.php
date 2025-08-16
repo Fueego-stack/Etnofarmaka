@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\TanamanController;
+use App\Http\Controllers\FavoriteController;
 
 
 
@@ -26,6 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/user/dashboard', [HomeController::class, 'index'])->name('user.dashboard');
     
     Route::resource('tanaman', TanamanController::class);
+    Route::post('/favorites/toggle/{tanaman}', [FavoriteController::class, 'toggleFavorite'])->name('favorites.toggle');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 
 });
 

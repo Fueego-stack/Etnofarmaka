@@ -34,6 +34,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function favorites()
+    {
+        return $this->belongsToMany(Tanaman::class, 'favorites', 'user_id', 'tanaman_id');
+    }
     /**
      * Get the attributes that should be cast.
      *
